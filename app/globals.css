@@ -1,0 +1,225 @@
+:root {
+  /* Brand Palette */
+  --emerald-green: #4f7a61;
+  --dark-green: #2f4a44;
+  --cream-bg: #f2e8d9;
+  --orange: #e8a675;
+  --white: #ffffff;
+  --dark-grey: #33383B;
+
+  /* Theme Mapping */
+  --background: var(--cream-bg);
+  --foreground: var(--dark-grey);
+
+  --primary: var(--emerald-green);
+  --primary-hover: var(--dark-green);
+  --secondary: var(--dark-green);
+  --accent: var(--orange);
+
+  --surface: var(--white);
+  --surface-hover: #f8fafc;
+
+  --border: #d1d5db;
+  --success: #4f7a61;
+  --error: #ef4444;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-poppins), sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  width: 100%;
+  flex: 1;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(79, 122, 97, 0.1);
+  border-radius: .5rem;
+  padding: 2.5rem;
+  box-shadow: 0 4px 20px rgba(47, 74, 68, 0.05);
+  margin-top: -2rem;
+  /* Pull up slightly to overlap or just sit consistently? No, let's just let it sit normally. Clean spacing is better. */
+  margin-top: 0;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--dark-green);
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--emerald-green);
+  margin-bottom: 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: var(--dark-green);
+  font-size: 0.95rem;
+}
+
+textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 2px solid var(--border);
+  background: #fafafa;
+  color: var(--foreground);
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  transition: all 0.2s ease;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(79, 122, 97, 0.1);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  align-items: center;
+}
+
+.style-select {
+  width: 100%;
+}
+
+select {
+  width: 100%;
+  padding: 0.875rem;
+  border-radius: 0.75rem;
+  border: 2px solid var(--border);
+  background: var(--white);
+  color: var(--foreground);
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234f7a61%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 0.8rem auto;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 122, 97, 0.1);
+}
+
+.button {
+  background: var(--accent);
+  color: var(--dark-green);
+  border: none;
+  padding: 0.875rem 2.5rem;
+  border-radius: .5rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+  flex: 0 0 auto;
+  box-shadow: 0 4px 6px -1px rgba(232, 166, 117, 0.4);
+}
+
+.button:hover {
+  background: #d99665;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px -1px rgba(232, 166, 117, 0.5);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.button:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.output-area {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.result-box {
+  background: linear-gradient(to right bottom, #ffffff, #fafafa);
+  border: 1px solid rgba(232, 166, 117, 0.2);
+  padding: 2rem;
+  border-radius: 1rem;
+  border-left: 6px solid var(--accent);
+  margin-top: 1rem;
+  white-space: pre-wrap;
+  line-height: 1.8;
+  color: var(--dark-green);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.error-box {
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  color: #ef4444;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+footer {
+  text-align: center;
+  margin-top: auto;
+  padding: 2rem;
+  color: var(--primary);
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
