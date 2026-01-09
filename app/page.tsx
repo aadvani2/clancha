@@ -46,7 +46,7 @@ export default function Home() {
       <main className="container">
         <div className="card">
           <div className="input-group">
-            <label htmlFor="message">Your Draft</label>
+            <label htmlFor="message">A message you might receive</label>
             <textarea
               id="message"
               value={text}
@@ -73,7 +73,7 @@ export default function Home() {
               onClick={handleRewrite}
               disabled={loading || !text.trim()}
             >
-              {loading ? "Rewriting..." : "Rewrite Message"}
+              {loading ? "Rewriting..." : "See the calmer version"}
             </button>
           </div>
 
