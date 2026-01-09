@@ -85,7 +85,7 @@ export default function Home() {
 
           {result && (
             <div className="output-area">
-              <label>Rewritten Message</label>
+              <label>The calmer version</label>
               <div className="result-box">
                 {result}
               </div>
