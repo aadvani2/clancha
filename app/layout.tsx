@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import "./globals.css";
+import "@/styles/globals.css";
+import StoreProvider from "@/components/StoreProvider";
+import { Toaster } from "@/components/ui/toaster";
 
 const poppins = Poppins({
-  variable: "--font-poppins",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
-  weight: ["300", "400", "600", "700"],
+  variable: "--font-poppins",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Clancha - Clarity, Not Chaos",
-  description: "Rewrite your messages with the perfect tone.",
+  description: "Family-focused simplified communication.",
 };
 
 export default function RootLayout({
@@ -20,8 +23,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable}`}>
-        {children}
+      <body
+        className={`${poppins.variable} antialiased bg-background text-foreground`}
+      >
+        <StoreProvider>
+          {children}
+          <Toaster />
+        </StoreProvider>
       </body>
     </html>
   );

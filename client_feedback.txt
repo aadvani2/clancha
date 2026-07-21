@@ -1,0 +1,27 @@
+The core behaviours are working well. Meaning is being preserved on the child-context replies, high-risk messages are being held for moderation rather than rewritten and delivered, and normal and mildly tense messages are flowing through correctly without unnecessary moderation. Good progress overall, thanks for sticking with the testing.
+
+A few smaller things to flag for the next round, none of which are blockers for sign-off but worth addressing before we move deeper
+
+1.⁠ ⁠Rewrite still changes facts in some cases
+I tested a reply from Phone B saying “he’s been a nightmare, he told a teacher to fuck off” and the rewrite delivered as “He has been difficult. He told a teacher to leave him alone.” Softening “nightmare” to “difficult” is fine, that’s tone. But “told a teacher to fuck off” becoming “told a teacher to leave him alone” changes what the child actually did. The first is the child being rude and swearing at a teacher. The second is the child setting a boundary.
+I undnAI’s constraints and that prompts can shape behaviour but not guarantee it. Worth tightening the rewrite prompt to be more explicit about the difference between softening tone and changing facts. Suggested addition, but happy to have your input:
+
+PRESERVE FACTS, SOFTEN ONLY TONE: When a message describes something a child or third party actually did or said, preserve the action accurately. You may soften descriptive adjectives (“nightmare” → “difficult”) but you must NOT change the action itself. Verbs describing what someone did, said, or what happened are FACTS, not tone. If the action contains profanity or aggression, keep the action and soften only the surrounding language.
+Input: “He told a teacher to fuck off” → Output:  fuck off.” (action preserved, the user is reporting, not directing language at anyone)
+Input: “He’s been a nightmare, he told a teacher to fuck off” → Output: “He’s been difficult, he told a teacher to fuck off.” (descriptive tone softened, action preserved)
+NOT: “He told a teacher to leave him alone” (this changes what happened)
+
+2.⁠ ⁠Threat classification routing
+When I sent “you’re a fucking slag, I’m going to kill you”, it went to Pending Review rather than being blocked. I’m comfortable with edge cases going to moderation rather than blocking for now, but per the safety classifier prompt, “I’m going to kill you” should match the Dunsafe”, which per spec should block.
+Could you check what classification was returned for that test? If it came back as “uncertain”, the classifier needs tuning. If it came back as “unsafe” but still routed to Pending Review, the routing logic itself needs a look.
+
+3.⁠ ⁠Moderator rewrite retry
+Per the build guide, moderators should be able to approve, deny, or request a rewrite retry on held messages. Could you confirm the retry option is built into the Pending Review queue? Useful safety net for when the rewrite output isn’t quite right but the original message isn’t unsafe enough to deny.
+
+4.⁠ ⁠Moderator channel assignment leftover
+I noticed the Moderators page still shows a “Channels Assignednnels” option, which I think is left over from when items were routed per moderator before we moved to the global queue. The global queue is working well, so this is just a UI tidy-up, can you remove the assignment column and link from the Moderators page so it reflects the current model?
+
+5.⁠ ⁠Receiving hours on channel page
+Same kind of thing, I think the channel page when logged in as admin is still showing receiving hours from when they were configured per channel before we moved to per user. The per-user setup is working correctly, but on the admin channel view I’d like to see both users’ receiving hours displayed, with the ability to amend either if needed. At the moment the channel page references “quiet hours” in the Emergency Bypass copy and shows a ration, which doesn’t quite reflect how it actually works now.
+
+Let me know your thoughts on the above

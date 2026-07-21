@@ -1,0 +1,73 @@
+As promised, here’s the full list of what I’ll be testing against for Milestone 4 sign-off. This is drawn directly from Documents 1, 2, and 3, plus the brand guidelines. Nothing here is new scope, it’s all already in the spec, but pulling it together in one place so we’re aligned.
+
+USER PORTAL
+
+Message history must display correctly, showing the user’s own original messages, their own rewritten messages, and rewritten messages received from the other user. The user must never see the other user’s original wording anywhere, this rule is absolute per spec.
+The user must be able to manage receiving hours with changes taking effect immediately. They must be able to switch tone (Calm and Clear or Firm and Fair), with the change applying only to messages they send and never to the other user. They must be able to manage billing and channels.
+If the Picture Sharing add-on is active, approved images and the picture folder must be visible. All Clancha system messages must display in the portal history, cd, beginning with “Clancha”.
+Users must not be able to delete or edit messages. The layout must be mobile-first with one-handed use, calm and on-brand. Approved colours, Poppins font, and approved logos only. The portal must feel like a direct extension of www.clancha.co.uk.
+
+STRIPE BILLING AND ENTITLEMENT ENFORCEMENT
+
+There must be one Stripe customer per Clancha account, one core subscription per channel at £14.99 per month, and the Picture Sharing add-on at £4.99 per month per channel attached to the same subscription. All charges must align to a single monthly billing date pount. Add-ons enabled mid-cycle must be pro-rated, and future charges must renew on the original billing date.
+The channel state machine must work correctly across Trial, Active SMS only, Active SMS plus Picture Sharing, View-only, and Closed. State transitions must work as specified: Trial moves to Active on successful payment, Active moves to View-only on failed or cancelled billing, and View-only moves back to Active on reactivation.
+View-only state must block SMS sending, and any outbound SMS attempt from a view-only channel must trigger the Appendix A10 system message. Failed payments must correctly move the channel to view-only. Cancellation, reactivation, and multi-channel flows must all work, with multiple channels on one account sharing one Stripe customer and one billing date. History must remain readable in view-only state, and either user must be able to restart a closed or view-only channel.
+
+PICTURE SHARING ADD-ON
+
+The add-on must be disabled by default and opt-in per channel. Either user can enable it. Image upload must be via portal only, never SMS or MMS. All images must go through AI check then human moderation. Approved images are stored in the portal with the recipient notified by SMS (Appendix A8). Denied images are never shown to the recipient and the sender is notified by SMS (Appendix A9).
+If the add-on is inactive, image upload must be rejected with a system message and upgrade link (Appendix A7). An SMS image attempt while the add-on is active must trigger Appendix A6. Denied images must be retained for 30 days with admin-only visibility, then permanently removed.
+Picture Sharing must present clearly as an opt-in extra, not bundled into the core. The core subscription experience and the core plus add-on experience must be visually distinct.
+
+Q&A SEARCH TOOL
+
+The tool must accept factual questions only (dates, times, commitments). The search scope is limited to the user’s own messages and rewritten messages they’re permitted to see. No summaries, no behavioural analysis, no advice. Responses must be generated on demand, not stored, and not shared with the other user.
+Test cases I’ll run include: “What time did I pick him up?” must return a factual answer. “Was my co-parent being unreasonable last week?” must refuse. “Summarise our last 10 messages” must refuse. “What should I do about him being late again?” must refuse. “Show me what the other parent originally said” must refuse, as visibility rules are absolute. “Is my co-parent showing signs of anything?” must refuse.
+I’d like to review the Q&A prompt before it goes live, the same way we reviewed the rewrite and safety prompts. Please send a draft when ready.
+
+VIEWER MODE AND VIEWER PORTAL
+
+Viewer access must require explicit approval and be granted per channel. There are two itten messages only, or full visible message history (rewrites plus user originals where permitted). Viewers cannot send messages, upload content, or interact with moderation.
+Adding a viewer must trigger the Appendix A11 system message. Viewer access must be revocable with immediate effect. The viewer portal must feel distinct from the user portal. Viewer access must be per-channel, not account-wide.
+
+MODERATOR PORTAL
+
+Approve, deny, and request rewrite retry must all be available on every held item. The interface must be mobile-first with one-handed use, oldest items first. The “Channels Assigned” column and “Assign Channels” option must be removhey’re leftover from the per-moderator routing model. All moderator actions must be logged.
+
+ADMIN AND SUPER ADMIN PORTAL
+
+The channel detail page must show both participants’ names, emails, and phone numbers. It must show the structured subscription state (Trial, Active SMS only, Active SMS plus Picture Sharing, View-only, Closed), both users’ receiving hours (with super admin able to amend per user), and linked children. Admin actions per channel must include suspend, cancel, reactivate, and close.
+Billing visibility per channel must include current state, billing date, last payment status, failed payments, and whether the add-on is active or inactive. Phone number pool management for the five UK mobile numbers must be accessible in Settings.
+Tht log must record all admin actions, prompt edits, moderator CRUD, channel and billing changes, logins, and admin overrides. It must have filters by date, channel, actor, and action type.
+Moderator authentication must use invite link or OTP, not direct password set. The spec says OTP-based authentication only, no passwords, no shared logins.
+Admins cannot edit message content or alter historical message records.
+Smaller polish items: the top-bar search and notification bell must either be functional or removed. Profile photo upload must either be functional or removed. The placeholder “Super Admin / Super Admin” identity must show the actual user’s name. Table overflow on Moderators and Channels pages e fixed at desktop width. Date formats in the activity log must be consistent.
+
+SYSTEM MESSAGES, FULL APPENDIX A SWEEP
+
+Every system message in the build must match Appendix A wording exactly. I’ll trigger each one and confirm verbatim. The full list is A1 (initial system introduction for User B), A2 (message queued, outside receiving hours), A3 (emergency delivery confirmation, sender), A4 (emergency delivery denied, sender), A5 (message blocked, SMS), A6 (MMS attempt via SMS, add-on active), A7 (MMS attempt via SMS, add-on inactive), A8 (picture upload approved, recipient), A9 (picture upload denied, sender), A10 (channel view-only, payment stopped), A11 (viewer added notification), and A12 (phone call recorded message).
+
+PHONE CALL HANDLING
+
+Calling a Clancha number musplay Appendix A12 verbatim, then the call must terminate immediately. No voicemail, routing, forwarding, or recording.
+
+RESILIENCE AND FAILURE
+
+For Twilio outages, outbound messages must be queued with no data lost, and delivery must auto-resume on recovery. For OpenAI outages, messages must be held safely and routed to moderation where appropriate, with unprocessed content never sent. Failures must never be silent and must be visible in logs.
+I’ll need to know how you’ve handled these scenarios so I can verify them.
+
+BRAND AND VISUAL ALIGNMENT
+
+Approved colours only: #4f7a61, #f2e8d9, #e8a675, #2F4A44, #33383B, #FFFFFF. Poppins throughout. Approved logo variations only (wordmark, flogo, icon, with and without background). Mobile-first, calm, warm, not clinical or surveillance-like. Visually consistent with www.clancha.co.uk.
+
+WHAT MUST NEVER HAPPEN
+
+The system must never reply as a user, anywhere. Users must never see the other user’s original wording, anywhere. Images must never bypass billing or moderation. AI must never provide advice or judgement, whether in rewrite, classifier, Q&A, or anywhere else. Portal logic must never override server rules. Features must never be added without specification.
+
+TESTG SETUP I’LL NEED FROM YOU
+
+To actually run all of this, I’ll need a Stripe test environment with a way to simulate first payments, mid-cycle add-on changes, failed payments, cancellations, and reactivations. I’ll need the ability to set up multiple channels on a single test account. I’ll need a test user account with Picture Sharing inactive and another with it active, so I can compare both experiences. I’ll need test viewer accounts so I can verify viewer mode end to end. A way to trigger Appendix A1 to A12 system messages without faking the whole flow each time would help, but isn’t essential.
+
+Let me know what you’ve got working so far and we can start with that, then build out from there.
+
+I understand that this is probably the biggest part of the build but excited to see it come together more.

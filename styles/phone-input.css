@@ -1,0 +1,132 @@
+/* React Phone Number Input Styles - Customized for Clancha */
+.PhoneInput {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem; /* Gap between country code and input */
+  width: 100%;
+  min-width: 0;
+}
+
+/* 1. Country Code Container */
+.PhoneInputCountry {
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Style it like a Shadcn Input/Button */
+  border: 1px solid #e2e8f0; /* border-input */
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 0 0.5rem;
+  height: 3rem;
+  min-width: 4rem; /* Ensure enough width for +XXX */
+  max-width: 6rem;
+  box-shadow: 0 1px 2px rgba(51, 56, 59, 0.06);
+  flex: 0 0 auto;
+}
+
+.PhoneInputCountry:focus-within {
+    outline: 2px solid transparent;
+    box-shadow: 0 0 0 2px hsl(var(--ring));
+}
+
+/* 2. The Select element (invisible but reachable) */
+.PhoneInputCountrySelect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* 3. The Country Icon/Content area */
+.PhoneInputCountryIcon {
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  
+  /* Ensure text is black and visible */
+  color: #0f172a; 
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Explicitly target the img and hide it, just in case */
+.PhoneInputCountryIconImg {
+  display: none !important;
+}
+
+/* Sometimes the code is just text inside the div, make sure it's not transparent */
+.PhoneInputCountryIcon--border {
+    box-shadow: none !important;
+    background: transparent !important; 
+}
+
+/* Text styling for the code */
+.PhoneInputCountryIcon {
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500;
+    color: #0f172a; /* text-foreground */
+}
+
+/* 4. The Arrow (optional, adding a small arrow makes it look like a dropdown) */
+.PhoneInputCountrySelectArrow {
+  display: block;
+  border-color: #64748b; /* muted-foreground color for better visibility */
+  border-style: solid;
+  border-width: 0 2px 2px 0;
+  content: '';
+  height: 0.4em;
+  width: 0.4em;
+  transform: rotate(45deg);
+  margin-left: 0.5rem;
+  opacity: 1; /* Make it fully visible */
+  margin-top: -2px; /* slight vertical adjustment */
+}
+
+/* 5. The Input Field */
+.PhoneInputInput {
+  flex: 1 1 0; /* Take remaining space without forcing overflow */
+  min-width: 0;
+  height: 3rem;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0; /* border-input */
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem; /* 16px — prevents iOS Safari focus-zoom */
+  line-height: 1.25rem;
+  box-shadow: 0 1px 2px rgba(51, 56, 59, 0.06);
+}
+
+@media (max-width: 360px) {
+  .PhoneInput {
+    gap: 0.375rem;
+  }
+
+  .PhoneInputCountry {
+    min-width: 3.5rem;
+    padding: 0 0.375rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .PhoneInputInput {
+    font-size: 0.875rem; /* desktop tightening — iOS zoom only triggers on touch */
+  }
+}
+
+.PhoneInputInput:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+  border-color: transparent;
+}
