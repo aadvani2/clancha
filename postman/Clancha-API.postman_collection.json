@@ -1,0 +1,358 @@
+{
+  "info": {
+    "name": "Clancha API",
+    "description": "End-to-end API collection for Clancha. Run locally with `npm run dev` and set baseUrl to http://localhost:3000.\n\n**Auth flow:**\n1. Send OTP (phone)\n2. Verify OTP (phone, code, email for signup) – saves token to variable\n3. Protected requests use Authorization: Bearer {{token}}",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" },
+    { "key": "channelId", "value": "" },
+    { "key": "phone", "value": "+447700900000" },
+    { "key": "code", "value": "123456" },
+    { "key": "email", "value": "user@example.com" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Send OTP",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{phone}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/send-otp",
+            "description": "Sends OTP to the given phone. Use same phone in Verify OTP."
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) {",
+                  "  pm.collectionVariables.set('token', res.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{phone}}\",\n  \"code\": \"{{code}}\",\n  \"email\": \"{{email}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/verify-otp",
+            "description": "Verifies OTP. For new users, email is required. Token is saved to collection variable for subsequent requests."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/logout",
+            "description": "Clears auth cookie. Optional: clear token variable after."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/users/me",
+            "description": "Returns current user (requires auth)."
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newemail@example.com\"\n}"
+            },
+            "url": "{{baseUrl}}/api/users/update-profile",
+            "description": "Update current user profile (e.g. email)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Channels",
+      "item": [
+        {
+          "name": "List Channels",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/channels",
+            "description": "List channels for current user."
+          }
+        },
+        {
+          "name": "Create Channel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) {",
+                  "  pm.collectionVariables.set('channelId', res.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"otherUserPhone\": \"+447700900001\"\n}"
+            },
+            "url": "{{baseUrl}}/api/channels",
+            "description": "Create a channel with another user (by phone). Other user must exist. Saves channelId to variable."
+          }
+        },
+        {
+          "name": "Get Channel by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/channels/{{channelId}}",
+            "description": "Get single channel. Use channelId from List or Create."
+          }
+        },
+        {
+          "name": "Get Channel Messages",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/channels/{{channelId}}/messages?limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "channels", "{{channelId}}", "messages"],
+              "query": [{ "key": "limit", "value": "50" }, { "key": "before", "value": "", "disabled": true }]
+            },
+            "description": "List messages in channel. Sender sees originalText + rewrittenText; recipient sees rewrittenText only."
+          }
+        },
+        {
+          "name": "Get Channel Settings",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/channels/{{channelId}}/settings",
+            "description": "Get current user's settings for this channel."
+          }
+        },
+        {
+          "name": "Update Channel Settings",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rewriteTone\": \"calm_clear\",\n  \"receivingHoursStart\": null,\n  \"receivingHoursEnd\": null,\n  \"emergencyBypassEnabled\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/channels/{{channelId}}/settings",
+            "description": "Update rewrite tone, receiving hours, emergency bypass."
+          }
+        },
+        {
+          "name": "Create Invite (email link)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"invitee@example.com\"\n}"
+            },
+            "url": "{{baseUrl}}/api/channels/{{channelId}}/invite",
+            "description": "Generate invite link for channel (email sending not yet configured)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Send Message (Portal)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"channelId\": \"{{channelId}}\",\n  \"text\": \"Hello, when is pickup?\"\n}"
+            },
+            "url": "{{baseUrl}}/api/messages/send",
+            "description": "Send a message from the portal. Uses same rewrite pipeline as SMS."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q&A",
+      "item": [
+        {
+          "name": "Ask Question",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"channelId\": \"{{channelId}}\",\n  \"question\": \"When is pickup next week?\"\n}"
+            },
+            "url": "{{baseUrl}}/api/qa",
+            "description": "Stateless Q&A over rewritten message history for the channel."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Moderator",
+      "item": [
+        {
+          "name": "Get Queue",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/moderator/queue",
+            "description": "List held messages and pending images. Requires moderator or admin role."
+          }
+        },
+        {
+          "name": "Review (Approve message)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"message\",\n  \"id\": \"<message_id_from_queue>\",\n  \"action\": \"approve\",\n  \"notes\": \"\"\n}"
+            },
+            "url": "{{baseUrl}}/api/moderator/review",
+            "description": "Approve or deny. type: message|image, action: approve|deny."
+          }
+        },
+        {
+          "name": "Review (Deny message)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"message\",\n  \"id\": \"<message_id_from_queue>\",\n  \"action\": \"deny\"\n}"
+            },
+            "url": "{{baseUrl}}/api/moderator/review"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get Users",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/admin/users",
+            "description": "List users. Requires admin role."
+          }
+        },
+        {
+          "name": "Get Channels",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/admin/channels",
+            "description": "List all channels. Requires admin role."
+          }
+        },
+        {
+          "name": "Get Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/admin/stats",
+            "description": "userCount, channelCount, messageCount. Requires admin role."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Billing",
+      "item": [
+        {
+          "name": "Create Payment Intent",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 14.99,\n  \"planName\": \"Core\"\n}"
+            },
+            "url": "{{baseUrl}}/api/create-payment-intent",
+            "description": "Create Stripe PaymentIntent (amount in currency units)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cron",
+      "item": [
+        {
+          "name": "Trigger Cron",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{CRON_SECRET}}", "description": "Set CRON_SECRET in env" }
+            ],
+            "url": "{{baseUrl}}/api/cron",
+            "description": "Trial expiry, queued message processing. Protect with CRON_SECRET."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks (reference)",
+      "item": [
+        {
+          "name": "Twilio (sample payload)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "From", "value": "+447700900000" },
+                { "key": "To", "value": "+447700900123" },
+                { "key": "Body", "value": "Test message" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/webhooks/twilio",
+            "description": "Twilio sends form-urlencoded. Signature validation required in production."
+          }
+        }
+      ]
+    }
+  ]
+}
